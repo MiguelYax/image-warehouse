@@ -1,0 +1,5 @@
+{
+    "prettier.tabWidth": 4,
+    "typescript.preferences.quoteStyle": "single",
+    "javascript.preferences.quoteStyle": "single"
+}
