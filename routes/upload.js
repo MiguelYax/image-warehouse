@@ -12,7 +12,7 @@ const path = require('path');
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
-    destination: config.get('storage'),
+    destination: config.storage,
     filename: function(req, file, cb) {
         cb(
             null,
@@ -48,21 +48,25 @@ function checkFileType(file, cb) {
     }
 }
 
+router.get('/upload', (req, res)=>{
+    res.render('upload');
+});
+
 router.post('/upload', (req, res) => {
     upload(req, res, err => {
         if (err) {
-            res.render('index', {
+            res.render('upload', {
                 msg: err
             });
         } else {
             if (req.file == undefined) {
-                res.render('index', {
+                res.render('upload', {
                     msg: 'Error: No File Selected!'
                 });
             } else {
-                res.render('index', {
+                res.render('upload', {
                     msg: 'File Uploaded!',
-                    file: `uploads/${req.file.filename}`
+                    file: `${config.storage}${req.file.filename}`
                 });
             }
         }
