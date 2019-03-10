@@ -1,3 +1,4 @@
 {
-    "storage": "./public/uploads/"
+    "storage": "./public/uploads/",
+    "port": 3000
 }

@@ -1,3 +1,4 @@
 {
-    "storage": "./server/upload/"
+    "storage": "./server/upload/",
+    "port": 80
 }
