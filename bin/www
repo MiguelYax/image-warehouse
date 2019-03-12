@@ -5,8 +5,8 @@
  */
 
 const app = require('../app');
-const https = require('https');
 const config = require('config');
+const protocol = require(config.https ? 'https' : 'http');
 const fs = require('fs');
 
 const options = {
@@ -25,7 +25,9 @@ app.set('port', port);
  * Create HTTP or HTTPS  server.
  */
 
-let server = https.createServer(options, app);
+let server = config.https
+    ? protocol.createServer(options, app)
+    : protocol.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
