@@ -2,7 +2,13 @@ extends layout
  
 block content
   h1= title
-  p Welcome to #{title}
+  //- p Welcome to #{title}
+  
   form(method='post', enctype='multipart/form-data')
-    input(type='file', name='myImage')
-    input(type='submit', name='uploadimage', value='Upload Image')
+    .input-group.mb-3
+      .custom-file
+        input#inputGroupFile02.custom-file-input(type='file')
+        label.custom-file-label(for='inputGroupFile02', aria-describedby='inputGroupFileAddon02') Choose file
+      .input-group-append
+        span#inputGroupFileAddon02.input-group-text Upload
+
