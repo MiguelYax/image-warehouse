@@ -1,5 +1,5 @@
 {
     "storage": "./public/uploads/",
-    "port": 3000,
+    "port": 80,
     "https": false
 }
