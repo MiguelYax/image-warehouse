@@ -1,5 +1,13 @@
 {
     "storage": "./public/uploads/",
     "port": 80,
-    "https": false
+    "https": false,
+    "mysql": {
+        "connectionLimit" : 10,
+        "host": "localhost",
+        "user": "root",
+        "password": "",
+        "database": "fileUploadDb",
+        "port": 3306
+    }
 }
