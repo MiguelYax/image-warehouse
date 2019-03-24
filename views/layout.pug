@@ -19,7 +19,12 @@ html
           span.nav-item
             i.fas.fa-camera
             strong  Image Warehouse
-        a.btn.btn-secondary(href='upload' type='button' data-toggle="tooltip" data-placement="top" title="Add")
-          i.fas.fa-plus-square
+        .btn-group
+          button.btn.btn-secondary( type='button' data-toggle="modal" data-target="#uploadModal")
+            i.fas.fa-plus-square
+          button.btn.btn-secondary( type='button' data-toggle="modal" data-target="#loginModal")
+            i.fas.fa-sign-in-alt
+          button.btn.btn-secondary( type='button' data-toggle="modal" data-target="#signupModal")
+            i.fas.fa-user-plus
   body
     block content

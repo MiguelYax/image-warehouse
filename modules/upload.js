@@ -3,9 +3,8 @@
  * date 03/09/2019
  * image loader
  */
-const express = require('express');
+
 const config = require('config');
-const router = express.Router();
 
 const multer = require('multer');
 const path = require('path');
@@ -48,29 +47,4 @@ function checkFileType(file, cb) {
     }
 }
 
-router.get('/upload', (req, res)=>{
-    res.render('upload');
-});
-
-router.post('/upload', (req, res) => {
-    upload(req, res, err => {
-        if (err) {
-            res.render('upload', {
-                msg: err
-            });
-        } else {
-            if (req.file == undefined) {
-                res.render('upload', {
-                    msg: 'Error: No File Selected!'
-                });
-            } else {
-                res.render('upload', {
-                    msg: 'File Uploaded!',
-                    file: `${config.storage}${req.file.filename}`
-                });
-            }
-        }
-    });
-});
-
-module.exports = router;
+module.exports = upload;
