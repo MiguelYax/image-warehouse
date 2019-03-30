@@ -119,4 +119,8 @@ router.post('/main', (req, res) => {
     });
 });
 
+router.get('/version', function(req, res) {
+    var pjson = require('../package.json');
+    res.send('v.' + pjson.version);
+});
 module.exports = router;
