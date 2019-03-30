@@ -1,7 +1,7 @@
 doctype html
 html
   head
-    title= title
+    title Image Warehouse
     
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
     //- link(rel='stylesheet', href='/stylesheets/style.css')
@@ -26,5 +26,14 @@ html
             i.fas.fa-sign-in-alt
           button.btn.btn-secondary( type='button' data-toggle="modal" data-target="#signupModal")
             i.fas.fa-user-plus
+          form(method="post", action="/signout")
+            button.btn.btn-secondary(type='submit')
+              i.fas.fa-sign-out-alt
   body
+    if msg.msg
+    .alert.alert-#{msg.type}.alert-dismissible.fade.show(role='alert')
+      |  #{msg}
+      button.close(type='button', data-dismiss='alert', aria-label='Close')
+           span.fas.fa-window-close(aria-hidden='true')
+
     block content

@@ -1,4 +1,4 @@
-const connection = require('./connection');
+const query = require('./query');
 const uuidv4 = require('uuid/v4');
 
 let user = {
@@ -10,11 +10,14 @@ let user = {
             /-/g,
             '\\-'
         )}', '${firstName}', '${lastName}', '${email}', '${password}');`;
-        connection.query(sql, cb);
+        query(sql, cb);
     },
     singin: function(email, password, cb) {
         let sql = `SELECT * FROM IW_USER WHERE EMAIL = '${email}' AND PASSWORD = '${password}' `;
-        connection.query(sql, cb);
+        query(sql, cb);
+    },
+    signout: function(email, cb) {
+        cb();
     }
 };
 

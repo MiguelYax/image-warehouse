@@ -1,4 +1,4 @@
-let query = require('./connection');
+let query = require('./query');
 
 
 query(

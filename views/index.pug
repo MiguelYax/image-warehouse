@@ -1,60 +1,47 @@
 extends layout
 
 block content
-  main(role='main')
-  h2=msg
-  #uploadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='uploadModalTitle', aria-hidden='true')
-    form(method='post', action="/upload" enctype='multipart/form-data')
-      .modal-dialog(role='document')
-        .modal-content
-          .modal-header
-            h5#uploadModalTitle.modal-title Choose file
-            button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span(aria-hidden='true') ×
-          .modal-body
-              .input-group.mb-3
-                .custom-file
-                  input#inputGroupFile02.custom-file-input(type='file')
-                  label.custom-file-label(for='inputGroupFile02', aria-describedby='inputGroupFileAddon02') Choose file
-                .input-group-append                  
-          .modal-footer
-            button.btn.btn-secondary(type='button', data-dismiss='modal') Close
-            button.btn.btn-primary(type='submit') Upload
   #loginModal.modal.fade(tabindex='-1', role='dialog', aria-hidden='true')
     form(method='POST', action="/signin")
       .modal-dialog(role='document')
         .modal-content
+          .modal-header            
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span.fas.fa-window-close(aria-hidden='true')
           .modal-body                
             .form-group
               label(for='exampleInputEmail1') Email address
-              input#exampleInputEmail1.form-control(type='email', aria-describedby='emailHelp', placeholder='Enter email', required)
+              input#exampleInputEmail1.form-control(type='email', name="email", aria-describedby='emailHelp', placeholder='Enter email', required)
               small#emailHelp.form-text.text-muted We'll never share your email with anyone else.
             .form-group
               label(for='exampleInputPassword1') Password
-              input#exampleInputPassword1.form-control(type='password', placeholder='Password', required)        
+              input#exampleInputPassword1.form-control(type='password', name="password", placeholder='Password', required)        
           .modal-footer
             button.btn.btn-primary(type='submit') Sing in
   #signupModal.modal.fade(tabindex='-1', role='dialog', aria-hidden='true')
-    form(method='POST', action="/signin")
+    form(method='POST', action="/signup")
       .modal-dialog(role='document')
         .modal-content
+          .modal-header            
+            button.close(type='button', data-dismiss='modal', aria-label='Close')
+              span.fas.fa-window-close(aria-hidden='true')
           .modal-body                
             .form-group
               label(for='firstNameInput') First name
-              input#firstNameInput.form-control(type='text', required)              
+              input#firstNameInput.form-control(type='text', name="firstName", required)              
             .form-group
               label(for='lastNameInput') Last name
-              input#lastNameInput.form-control(type='text', required)              
+              input#lastNameInput.form-control(type='text', name="lastName", required)              
             .form-group
               label(for='emailInput') Email address
-              input#emailInput.form-control(type='email', aria-describedby='emailHelp', placeholder='Enter email')
+              input#emailInput.form-control(type='email', name="email", aria-describedby='emailHelp', placeholder='Enter email')
               small#emailHelp.form-text.text-muted We'll never share your email with anyone else.
             .form-group
               label(for='exampleInputPassword1') Password
-              input#exampleInputPassword1.form-control(type='password', placeholder='Password')        
+              input#exampleInputPassword1.form-control(type='password', name="password", placeholder='Password')        
             .form-group
               label(for='exampleInputPassword1') Confirm password
-              input#exampleInputPassword1.form-control(type='password', placeholder='Confirm password')        
+              input#exampleInputPassword1.form-control(type='password', name="repassword", placeholder='Confirm password')        
           .modal-footer
             button.btn.btn-primary(type='submit') Sing up
     .album.py-5
