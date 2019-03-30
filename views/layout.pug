@@ -31,8 +31,8 @@ html
               i.fas.fa-sign-out-alt
   body
     if msg.msg
-    .alert.alert-#{msg.type}.alert-dismissible.fade.show(role='alert')
-      |  #{msg}
+     div(class='alert alert-'+msg.type+' alert-dismissible fade show'  role='alert')
+      |  #{msg.msg}
       button.close(type='button', data-dismiss='alert', aria-label='Close')
            span.fas.fa-window-close(aria-hidden='true')
 

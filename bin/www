@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+const init = require('../modules/init');
 const app = require('../app');
 const config = require('config');
 const protocol = require(config.https ? 'https' : 'http');
