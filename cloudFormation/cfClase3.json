@@ -1,0 +1,107 @@
+{
+  "Resources": {
+    "Ec2Instance1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-0c55b159cbfafe1f0",
+        "KeyName": "myKeyValuePair",
+        "InstanceType": "t2.micro",
+        "SecurityGroupIds": ["mySecurityGroupEc2"],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "Ec2Instance1"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "echo INSTALAR NODE JS \n",
+                "curl -sL https://deb.nodesource.com/setup_10.x | sudo bash - \n",
+                "sudo apt -y install nodejs \n",
+                "sudo npm install forever -g \n",
+                "git clone https://github.com/MiguelYax/image-warehouse.git \n",
+                "cd image-warehouse \n",
+                "sudo npm install \n",
+                "sudo forever start bin/www \n"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "Ec2Instance2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-0c55b159cbfafe1f0",
+        "KeyName": "myKeyValuePair",
+        "InstanceType": "t2.micro",
+        "SecurityGroupIds": ["mySecurityGroupEc2"],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "Ec2Instance1"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "echo INSTALAR NODE JS \n",
+                "curl -sL https://deb.nodesource.com/setup_10.x | sudo bash - \n",
+                "sudo apt -y install nodejs \n",
+                "sudo npm install forever -g \n",
+                "git clone https://github.com/MiguelYax/image-warehouse.git \n",
+                "cd image-warehouse \n",
+                "sudo npm install \n",
+                "sudo forever start bin/www \n"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "myRDSDb": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBName": "fileUploadDb",
+        "AllocatedStorage": "20",
+        "DBInstanceClass": "db.t2.micro",
+        "Engine": "MySQL",
+        "MasterUsername": "userFileUpload",
+        "MasterUserPassword": "passFileUpload",
+        "DBInstanceIdentifier": "mysqlfileupload"
+      }
+    },
+    "myElasticLoadBalancing": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "AvailabilityZones": { "Fn::GetAZs": "" },
+        "Instances": [{ "Ref": "Ec2Instance1" }, { "Ref": "Ec2Instance2" }],
+        "Listeners": [
+          {
+            "LoadBalancerPort": "80",
+            "InstancePort": "80",
+            "Protocol": "HTTP"
+          }
+        ],
+        "HealthCheck": {
+          "Target": "HTTP:80/",
+          "HealthyThreshold": "3",
+          "UnhealthyThreshold": "5",
+          "Interval": "30",
+          "Timeout": "5"
+        },
+        "ConnectionDrainingPolicy": {
+          "Enabled": "true",
+          "Timeout": "60"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,325 @@
+{
+  "Resources": {
+    
+  
+    "vpcProjectAwsCourse": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "vpcProjectAwsCourse"
+          }
+        ]
+      }
+    },
+    
+    
+    "z1pubSubnet1": {
+			"DependsOn": ["vpcProjectAwsCourse"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {  
+					"Ref": "vpcProjectAwsCourse"
+				},
+				"MapPublicIpOnLaunch": false,
+        "CidrBlock":"10.0.1.0/24",
+        "AvailabilityZone" : "us-east-2a",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "z1pubSubnet1"
+          }
+        ]
+			}
+    },
+    "z1privSubnet1": {
+			"DependsOn": ["vpcProjectAwsCourse"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {  
+					"Ref": "vpcProjectAwsCourse"
+				},
+				"MapPublicIpOnLaunch": false,
+        "CidrBlock":"10.0.2.0/24",
+        "AvailabilityZone" : "us-east-2a",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "z1privSubnet1"
+          }
+        ]
+			}
+    },
+    "z1privSubnet2": {
+			"DependsOn": ["vpcProjectAwsCourse"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {  
+					"Ref": "vpcProjectAwsCourse"
+				},
+				"MapPublicIpOnLaunch": false,
+        "CidrBlock":"10.0.3.0/24",
+        "AvailabilityZone" : "us-east-2a",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "z1privSubnet2"
+          }
+        ]
+			}
+    },
+    
+
+
+    "z2pubSubnet1": {
+			"DependsOn": ["vpcProjectAwsCourse"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {  
+					"Ref": "vpcProjectAwsCourse"
+				},
+				"MapPublicIpOnLaunch": false,
+        "CidrBlock":"10.0.4.0/24",
+        "AvailabilityZone" : "us-east-2c",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "z2pubSubnet1"
+          }
+        ]
+			}
+    },
+    "z2privSubnet1": {
+			"DependsOn": ["vpcProjectAwsCourse"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {  
+					"Ref": "vpcProjectAwsCourse"
+				},
+				"MapPublicIpOnLaunch": false,
+        "CidrBlock":"10.0.5.0/24",
+        "AvailabilityZone" : "us-east-2c",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "z2privSubnet1"
+          }
+        ]
+			}
+    },
+    "z2privSubnet2": {
+			"DependsOn": ["vpcProjectAwsCourse"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {  
+					"Ref": "vpcProjectAwsCourse"
+				},
+				"MapPublicIpOnLaunch": false,
+        "CidrBlock":"10.0.6.0/24",
+        "AvailabilityZone" : "us-east-2c",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "z2privSubnet2"
+          }
+        ]
+			}
+    },
+    
+    "securityGroupvpcProjectAwsCourse": {
+      "DependsOn": ["vpcProjectAwsCourse"],
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId" : {"Ref" : "vpcProjectAwsCourse"},
+        "Tags" : [ {"Key" : "Name", "Value" : "securityGroupvpcProjectAwsCourse"}],
+        "GroupName": "securityGroupvpcProjectAwsCourse",
+        "GroupDescription": "Allow http to client host and mysql",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+
+
+    
+
+
+    "internetGatewayvpcProjectAwsCourse" : {
+      "DependsOn": ["vpcProjectAwsCourse"],
+      "Type" : "AWS::EC2::InternetGateway",
+      "Properties" : {
+         "Tags" : [ {"Key" : "Name", "Value" : "internetGatewayvpcProjectAwsCourse"}]
+      }
+    },
+    "internetGatewayAttachvpcProjectAwsCourse" : {
+      "DependsOn": ["internetGatewayvpcProjectAwsCourse"],
+      "Type" : "AWS::EC2::VPCGatewayAttachment",
+      "Properties" : {
+        "VpcId" : { "Ref" : "vpcProjectAwsCourse" },
+        "InternetGatewayId" : { "Ref" : "internetGatewayvpcProjectAwsCourse" }
+      }
+    },
+
+    "pubrouteTablevpcProjectAwsCourse" : {
+      "DependsOn": ["vpcProjectAwsCourse"],
+      "Type" : "AWS::EC2::RouteTable",
+      "Properties" : {
+         "VpcId" : { "Ref" : "vpcProjectAwsCourse" },
+         "Tags" : [ { "Key" : "Name", "Value" : "pubrouteTablevpcProjectAwsCourse" } ]
+      }
+   },
+
+   "RoutepubrouteTablevpcProjectAwsCourse" : {
+    "DependsOn": ["vpcProjectAwsCourse","internetGatewayvpcProjectAwsCourse","pubrouteTablevpcProjectAwsCourse"],
+    "Type" : "AWS::EC2::Route",
+    "Properties" : {
+       "RouteTableId" : { "Ref" : "pubrouteTablevpcProjectAwsCourse" },
+       "DestinationCidrBlock" : "0.0.0.0/0",
+       "GatewayId" : { "Ref" : "internetGatewayvpcProjectAwsCourse" }
+    }
+  },
+
+
+   "pubrouteTablevpcProjectAwsCourseassociation1" : {
+    "DependsOn": ["z1pubSubnet1"],
+    "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+    "Properties" : {
+       "SubnetId" : { "Ref" : "z1pubSubnet1" },
+       "RouteTableId" : { "Ref" : "pubrouteTablevpcProjectAwsCourse" }
+    }
+    },
+    "pubrouteTablevpcProjectAwsCourseassociation2" : {
+      "DependsOn": ["z2pubSubnet1"],
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+         "SubnetId" : { "Ref" : "z2pubSubnet1" },
+         "RouteTableId" : { "Ref" : "pubrouteTablevpcProjectAwsCourse" }
+      }
+      },
+
+
+   "privrouteTablevpcProjectAwsCourse" : {
+    "DependsOn": ["vpcProjectAwsCourse"],
+    "Type" : "AWS::EC2::RouteTable",
+    "Properties" : {
+       "VpcId" : { "Ref" : "vpcProjectAwsCourse" },
+       "Tags" : [ { "Key" : "Name", "Value" : "privrouteTablevpcProjectAwsCourse" } ]
+    }
+    },
+    "privrouteTablevpcProjectAwsCourseassociation1" : {
+      "DependsOn": ["z1privSubnet1"],
+      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties" : {
+         "SubnetId" : { "Ref" : "z1privSubnet1" },
+         "RouteTableId" : { "Ref" : "privrouteTablevpcProjectAwsCourse" }
+      }
+      },
+      "privrouteTablevpcProjectAwsCourseassociation2" : {
+        "DependsOn": ["z1privSubnet2"],
+        "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties" : {
+           "SubnetId" : { "Ref" : "z1privSubnet2" },
+           "RouteTableId" : { "Ref" : "privrouteTablevpcProjectAwsCourse" }
+        }
+        },
+        "privrouteTablevpcProjectAwsCourseassociation3" : {
+          "DependsOn": ["z2privSubnet1"],
+          "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties" : {
+             "SubnetId" : { "Ref" : "z2privSubnet1" },
+             "RouteTableId" : { "Ref" : "privrouteTablevpcProjectAwsCourse" }
+          }
+          },
+          "privrouteTablevpcProjectAwsCourseassociation4" : {
+            "DependsOn": ["z2privSubnet2"],
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+               "SubnetId" : { "Ref" : "z2privSubnet2" },
+               "RouteTableId" : { "Ref" : "privrouteTablevpcProjectAwsCourse" }
+            }
+            },
+
+
+    "Ec2Instance1": {
+      "DependsOn": ["vpcProjectAwsCourse","z1pubSubnet1"],
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SubnetId" : { "Ref" : "z1pubSubnet1" },
+        "ImageId": "ami-0c55b159cbfafe1f0",
+        "BlockDeviceMappings" : [
+          {
+             "DeviceName" : "/dev/sdm",
+             "Ebs" : {
+                "VolumeType" : "io1",
+                "Iops" : "200",
+                "DeleteOnTermination" : "false",
+                "VolumeSize" : "20"
+             }
+          },
+          {
+             "DeviceName" : "/dev/sdk",
+             "NoDevice" : {}
+          }
+       ],
+        "KeyName": "myKeyValuePair",
+        "InstanceType": "t2.micro",
+        "SecurityGroupIds": [{"Fn::GetAtt" : ["securityGroupvpcProjectAwsCourse", "GroupId"]}],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "Ec2Instance1"
+          }
+        ]
+      }
+    },
+    
+    "ElasticIpEc2Instance1" : {
+      "DependsOn": ["Ec2Instance1"],
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+          "InstanceId" : { "Ref" : "Ec2Instance1" }
+      }
+     }
+
+  }
+}

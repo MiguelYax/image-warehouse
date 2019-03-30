@@ -1,0 +1,140 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    
+    "Resources": {
+
+        "myVPC": {
+            "VpcId": "vpc-3f139646", 
+            "InstanceTenancy": "default", 
+            "Tags": [], 
+            "Ipv6CidrBlockAssociationSet": [], 
+            "State": "pending", 
+            "DhcpOptionsId": "dopt-61079b07", 
+            "CidrBlock": "172.31.0.0/16", 
+            "IsDefault": true
+        },
+        "myInternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {}
+        },
+        "pubSubnet1": {
+			"DependsOn": ["myVPC"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "myVPC"
+				},
+				"MapPublicIpOnLaunch": false,
+				"CidrBlock": {
+					"Fn::FindInMap": ["SubnetConfig", "Public", "CIDR"]
+				}
+			}
+		},
+		"privSubnet1": {
+			"DependsOn": ["myVPC", "pubSubnet1"],
+			"Type": "AWS::EC2::Subnet",
+			"Properties": {
+				"VpcId": {
+					"Ref": "myVPC"
+				},
+				"AvailabilityZone": {
+					"Fn::GetAtt": ["pubSubnet1", "AvailabilityZone"]
+				},
+				"MapPublicIpOnLaunch": false,
+				"CidrBlock": {
+					"Fn::FindInMap": ["SubnetConfig", "Private", "CIDR"]
+				}
+			}
+		},
+
+        "privRouteTable": {
+			"DependsOn": ["myVPC"],
+			"Type": "AWS::EC2::RouteTable",
+			"Properties": {
+				"VpcId": {
+					"Ref": "myVPC"
+				}
+			}
+		},
+
+        "myElasticLoadBalancing": {
+            "DependsOn": ["myVPC", "pubSubnet1"],
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "AvailabilityZones" : { "Fn::GetAZs" : "" },
+                "Listeners": [{
+                    "LoadBalancerPort": "80",
+                    "InstancePort": "80",
+                    "Protocol": "HTTP"
+                }]
+            }
+        },
+        "myInstance1": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "NetworkInterfaces": [
+                    {
+                        "SubnetId": {
+                            "Ref": "pubSubnet1"
+                        },
+                        "DeviceIndex": "0"
+                    }
+                ],
+                "ImageId" : "ami-0a313d6098716f372",
+                "KeyName" : "myInstance1",
+                "InstanceType": "t2.micro"
+            }
+        },
+        "myInstance2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "NetworkInterfaces": [
+                    {
+                        "SubnetId": {
+                            "Ref": "pubSubnet1"
+                        },
+                        "DeviceIndex": "0"
+                    }
+                ],
+                "ImageId" : "ami-0a313d6098716f372",
+                "KeyName" : "myInstance2",
+                "InstanceType": "t2.micro"
+            }
+        },
+        "myBucket1": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {}
+        },
+        "myBucket2": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {}
+        },
+        "myRDSDb": {
+            "DependsOn": ["myVPC", "pubSubnet1"],
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "DBName" : "fileUploadDb",
+                "AllocatedStorage" : "100",
+                "DBInstanceClass" : "db.t3.micro",
+                "Engine" : "MySQL",
+                "MasterUsername" : "userFileUpload",
+                "MasterUserPassword" : "passFileUpload"
+            }
+            
+        },
+        "myLambdaExecutionRole": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [{
+                "Effect": "Allow",
+                "Principal": { "Service": ["lambda.amazonaws.com"] },
+                "Action": ["sts:AssumeRole"]
+              }]
+            },
+            "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]
+          }
+        }
+    }
+}
