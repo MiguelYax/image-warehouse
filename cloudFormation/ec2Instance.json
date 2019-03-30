@@ -1,0 +1,37 @@
+{
+  "Resources": {
+    "Ec2Instance1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "ami-0c55b159cbfafe1f0",
+        "KeyName": "myKeyValuePair",
+        "InstanceType": "t2.micro",
+        "SecurityGroupIds": ["mySecurityGroupEc2"],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "Ec2Instance1"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "cd /home/ubuntu/ \n",
+                "curl -sL https://deb.nodesource.com/setup_10.x | sudo bash - \n",
+                "sudo apt -y install nodejs \n",
+                "sudo npm install forever -g \n",
+                "git clone https://github.com/MiguelYax/image-warehouse.git \n",
+                "cd image-warehouse/application/ \n",
+                "sudo npm install \n",
+                "sudo forever start bin/www \n"
+              ]
+            ]
+          }
+        }
+      }
+    }
+  }
+}
