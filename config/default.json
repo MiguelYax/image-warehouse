@@ -5,7 +5,7 @@
     "https": false,
     "mysql": {
         "connectionLimit": 10,
-        "host": "localhost",
+        "host": "mysqlfileupload.cwti6x3lleuq.us-east-2.rds.amazonaws.com",
         "user": "userFileUpload",
         "password": "passFileUpload",
         "database": "fileUploadDb",
