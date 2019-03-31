@@ -1,5 +1,4 @@
 var express = require('express');
-var url = require('url');
 var router = express.Router();
 
 let user = require('../modules/user');
@@ -13,12 +12,21 @@ function getResult(config = {}) {
             msg: config.msg || '',
             type: config.type || 'success'
         },
-        list: config.data || []
+        list: config.data || [],
+        session: false
     };
 }
 
 function handler(req, res) {
     var result = req.dataProcessed || getResult();
+    if (req.session.uuid) {
+        result.session = true;
+    } else {
+        if (req.path != '/') {
+            result.redirect = '/';
+        }
+    }
+
     if (result.redirect) {
         res.redirect(result.redirect);
     } else {
@@ -69,7 +77,10 @@ router.post(
                     : getResult({
                         redirect: '/main'
                     });
-
+            if (data.length) {
+                req.session.uuid = data[0].UUID;
+                req.session.user = data[0].EMAIL;
+            }
             return next();
         });
     },
@@ -80,25 +91,28 @@ router.post(
     '/signout',
     function(req, res, next) {
         user.signout(req.email, function(err, data) {
-            /**
-             * @todo destruir cookie
-             */
-            req.session.destroy(function(err) {
-                if (err) {
-                } else {
-                    delete req.session.user;
-                    delete req.session.name;
+            if (req.session.uuid) {
+                req.session.destroy(function(err) {
                     res.redirect('/');
-                }
-            });
+                });
+            } else {
+                res.redirect('/');
+            }
         });
     },
     handler
 );
 
-router.get('/main', function(req, res, next) {
-    res.render('main', getResult());
-});
+router.get(
+    '/main',
+    function(req, res, next) {
+        res.dataProcessed = getResult({
+            view: 'main'
+        });
+        return next();
+    },
+    handler
+);
 
 router.post('/main', (req, res) => {
     upload(req, res, err => {
