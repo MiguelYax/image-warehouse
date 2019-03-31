@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 let user = require('../modules/user');
+let image = require('../modules/image');
 let upload = require('../modules/upload');
 
 function getResult(config = {}) {
@@ -106,7 +107,7 @@ router.post(
 router.get(
     '/main',
     function(req, res, next) {
-        res.dataProcessed = getResult({
+        req.dataProcessed = getResult({
             view: 'main'
         });
         return next();
@@ -114,19 +115,24 @@ router.get(
     handler
 );
 
-router.post('/main', (req, res) => {
-    upload(req, res, err => {
-        if (err) {
-            res.render('main', getResult({ msg: err }));
-        } else {
-            /**
-             * @todo consultar el listado de imagenes del usuario
-             */
-
-            res.render('main', getResult({ data: [] }));
-        }
-    });
-});
+router.post(
+    '/main',
+    function(req, res, next) {
+        upload(req, res, err => {
+            if (err) {
+                req.dataProcessed = getResult({ msg: err, type: 'danger' });
+                return next();
+            } else {
+                
+                image.read(req.session.uuid, function(err, data = []) {
+                    req.dataProcessed = getResult({ data: data });
+                    return next();
+                });
+            }
+        });
+    },
+    handler
+);
 
 router.get('/version', function(req, res) {
     var pjson = require('../package.json');

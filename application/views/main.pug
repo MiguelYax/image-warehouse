@@ -3,7 +3,7 @@ extends layout
 block content
  main(role='main')
   #uploadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='uploadModalTitle', aria-hidden='true')
-    form(method='post', action="/upload" enctype='multipart/form-data')
+    form(method='post', action="/main" enctype='multipart/form-data')
       .modal-dialog(role='document')
         .modal-content
           .modal-header
@@ -13,7 +13,7 @@ block content
           .modal-body
               .input-group.mb-3
                 .custom-file
-                  input#inputGroupFile02.custom-file-input(type='file', required)
+                  input#inputGroupFile02.custom-file-input(type='file', name='myImage',5 required)
                   label.custom-file-label(for='inputGroupFile02', aria-describedby='inputGroupFileAddon02') Choose file
                 .input-group-append                  
           .modal-footer
