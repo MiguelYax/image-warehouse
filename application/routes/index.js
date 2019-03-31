@@ -1,120 +1,115 @@
 var express = require('express');
+var url = require('url');
 var router = express.Router();
-var message = {
-    type: 'alert',
-    msg: ''
-};
 
 let user = require('../modules/user');
 let upload = require('../modules/upload');
-let enumerables = [
-    //'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable',
-    'valueOf',
-    'toLocaleString',
-    'toString',
-    'constructor'
-];
-let apply = function(object, config, defaults) {
-    if (object) {
-        if (defaults) {
-            apply(object, defaults);
-        }
 
-        if (config && typeof config === 'object') {
-            var i, j, k;
-
-            for (i in config) {
-                object[i] = config[i];
-            }
-
-            if (enumerables) {
-                for (j = enumerables.length; j--; ) {
-                    k = enumerables[j];
-                    if (config.hasOwnProperty(k)) {
-                        object[k] = config[k];
-                    }
-                }
-            }
-        }
-    }
-
-    return object;
-};
-
-let parse = function(data = {}, req) {
-    return apply(
-        {
-            list: [],
-            msg: message
+function getResult(config = {}) {
+    return {
+        redirect: config.redirect || null,
+        view: config.view || 'index',
+        message: {
+            msg: config.msg || '',
+            type: config.type || 'success'
         },
-        data
-    );
-};
+        list: config.data || []
+    };
+}
 
-router.get('/', function(req, res, next) {
-    message.msg = 'Welcome...';
-    res.render('index', parse());
-});
+function handler(req, res) {
+    var result = req.dataProcessed || getResult();
+    if (result.redirect) {
+        res.redirect(result.redirect);
+    } else {
+        res.render(result.view || 'index', result);
+    }
+}
 
-router.get('/index.html', function(req, res, next) {
-    res.redirect('/');
-});
+router.get('/', handler);
 
-router.post('/signup', function(req, res, next) {
-    user.singup(
-        req.body.firstName,
-        req.body.lastName,
-        req.body.email,
-        req.body.password,
-        function(err, data) {
-            if (err) {
-                res.render('index', parse());
-            } else {
-                res.render('index', parse({ msg: 'Usuario registrado' }));
+router.get('/index', handler);
+
+router.post(
+    '/signup',
+    function(req, res, next) {
+        user.singup(
+            req.body.firstName,
+            req.body.lastName,
+            req.body.email,
+            req.body.password,
+            function(err, data) {
+                req.dataProcessed = err
+                    ? getResult({
+                        msg: 'Error al registrar un usuario.',
+                        type: 'error'
+                    })
+                    : getResult({ msg: 'Usuario registrado' });
+
+                return next();
             }
-        }
-    );
-});
+        );
+    },
+    handler
+);
 
-router.post('/signin', function(req, res, next) {
-    user.singin(req.body.email, req.body.password, function(err, data) {
-        if (err) {
-            res.render('index', parse({ msg: 'Error en la autenticacion' }));
-        } else {
-            if (data.length) {
-                req.session.user = data[0].UUID;
-                req.session.name = data[0].FIRSTNAME;
-                message.msg = 'Autenticacion exitosa';
-                message.type = 'success';
-                res.redirect('/main');
-            } else {
-                message.msg = 'Usuario o contraseña incorrecta.';
-                message.type = 'danger';
-                res.redirect('/');
-            }
-        }
-    });
-});
+router.post(
+    '/signin',
+    function(req, res, next) {
+        user.singin(req.body.email, req.body.password, function(
+            err,
+            data = []
+        ) {
+            req.dataProcessed =
+                err || !data.length
+                    ? getResult({
+                        msg: 'Usuario o contraseña incorrecta.',
+                        type: 'danger'
+                    })
+                    : getResult({
+                        redirect: '/main'
+                    });
 
-router.post('/signout', function(req, res, next) {
-    user.signout(req.email, function(err, data) {
-        /**
-         * @todo destruir cookie
-         */
-        res.redirect('/');
-    });
+            return next();
+        });
+    },
+    handler
+);
+
+router.post(
+    '/signout',
+    function(req, res, next) {
+        user.signout(req.email, function(err, data) {
+            /**
+             * @todo destruir cookie
+             */
+            req.session.destroy(function(err) {
+                if (err) {
+                } else {
+                    delete req.session.user;
+                    delete req.session.name;
+                    res.redirect('/');
+                }
+            });
+        });
+    },
+    handler
+);
+
+router.get('/main', function(req, res, next) {
+    res.render('main', getResult());
 });
 
 router.post('/main', (req, res) => {
     upload(req, res, err => {
         if (err) {
-            res.render('main', parse({ msg: err }));
+            res.render('main', getResult({ msg: err }));
         } else {
-            if (req.file == undefined) {
-                res.render('index', parse({ msg: 'Error: No File Selected!' }));
-            } else {
-               
-            }
+            /**
+             * @todo consultar el listado de imagenes del usuario
+             */
+
+            res.render('main', getResult({ data: [] }));
         }
     });
 });

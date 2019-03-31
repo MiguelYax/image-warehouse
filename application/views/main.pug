@@ -13,9 +13,27 @@ block content
           .modal-body
               .input-group.mb-3
                 .custom-file
-                  input#inputGroupFile02.custom-file-input(type='file')
+                  input#inputGroupFile02.custom-file-input(type='file', required)
                   label.custom-file-label(for='inputGroupFile02', aria-describedby='inputGroupFileAddon02') Choose file
                 .input-group-append                  
           .modal-footer
             button.btn.btn-secondary(type='button', data-dismiss='modal') Close
             button.btn.btn-primary(type='submit') Upload
+    .album.py-5
+      .container
+        .row
+          each img, i in list
+            .col-md-4
+              .card.mb-4.box-shadow
+                img.card-img-top(src='uploads/' + img.name alt=img.name)
+                .card-body
+                  p.card-text
+                  .d-flex.justify-content-between.align-items-center
+                    .btn-group
+                      button.btn.btn-sm.btn-outline-secondary(type='button' data-toggle="tooltip" data-placement="top" title="View")
+                        i.fas.fa-eye
+                      button.btn.btn-sm.btn-outline-secondary(type='button' data-toggle="tooltip" data-placement="top" title="Edit")
+                        i.fas.fa-edit
+                      button.btn.btn-sm.btn-outline-secondary(type='button' data-toggle="tooltip" data-placement="top" title="Remove")
+                        i.fas.fa-trash
+                    //- small.text-muted 9 mins

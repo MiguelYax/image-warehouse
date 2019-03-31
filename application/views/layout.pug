@@ -30,9 +30,9 @@ html
             button.btn.btn-secondary(type='submit')
               i.fas.fa-sign-out-alt
   body
-    if msg.msg
-     div(class='alert alert-'+msg.type+' alert-dismissible fade show'  role='alert')
-      |  #{msg.msg}
+    if message.msg
+     div(class='alert alert-'+message.type+' alert-dismissible fade show'  role='alert')
+      |  #{message.msg}
       button.close(type='button', data-dismiss='alert', aria-label='Close')
            span.fas.fa-window-close(aria-hidden='true')
 
