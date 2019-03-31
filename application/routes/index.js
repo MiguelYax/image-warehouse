@@ -107,10 +107,14 @@ router.post(
 router.get(
     '/main',
     function(req, res, next) {
-        req.dataProcessed = getResult({
-            view: 'main'
+        image.read(req.session.uuid, function(err, data = []) {
+            req.dataProcessed = getResult({ view: 'main', data: data });
+            return next();
         });
-        return next();
+        // req.dataProcessed = getResult({
+        //     view: 'main'
+        // });
+        // return next();
     },
     handler
 );
@@ -120,14 +124,14 @@ router.post(
     function(req, res, next) {
         upload(req, res, err => {
             if (err) {
-                req.dataProcessed = getResult({ msg: err, type: 'danger' });
+                req.dataProcessed = getResult({
+                    view: 'main',
+                    msg: err,
+                    type: 'danger'
+                });
                 return next();
             } else {
-                
-                image.read(req.session.uuid, function(err, data = []) {
-                    req.dataProcessed = getResult({ data: data });
-                    return next();
-                });
+                res.redirect('/main');
             }
         });
     },

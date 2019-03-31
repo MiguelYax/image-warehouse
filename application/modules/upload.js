@@ -5,7 +5,7 @@
  */
 
 const config = require('config');
-
+const image = require('./image');
 const multer = require('multer');
 const path = require('path');
 
@@ -13,9 +13,17 @@ const path = require('path');
 const storage = multer.diskStorage({
     destination: config.storage,
     filename: function(req, file, cb) {
-        cb(
-            null,
-            file.fieldname + '-' + Date.now() + path.extname(file.originalname)
+        file.uuid = image.uuid();
+        image.upload(
+            file.uuid,
+            file.originalname,
+            0,
+            req.session.uuid,
+            path.extname(file.originalname),
+            function(err, data) {
+                // console.log('insert');
+                cb(null, file.uuid + path.extname(file.originalname));
+            }
         );
     }
 });
@@ -25,12 +33,12 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 1000000 },
     fileFilter: function(req, file, cb) {
-        checkFileType(file, cb);
+        checkFileType(file, cb, req.session.uuid);
     }
 }).single('myImage');
 
 // Check File Type
-function checkFileType(file, cb) {
+function checkFileType(file, cb, uuidUser) {
     // Allowed ext
     const filetypes = /jpeg|jpg|png|gif/;
     // Check ext

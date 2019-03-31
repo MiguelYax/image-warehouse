@@ -1,31 +1,31 @@
 extends layout
 
 block content
- main(role='main')
-  #uploadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='uploadModalTitle', aria-hidden='true')
-    form(method='post', action="/main" enctype='multipart/form-data')
-      .modal-dialog(role='document')
-        .modal-content
-          .modal-header
-            h5#uploadModalTitle.modal-title Choose file
-            button.close(type='button', data-dismiss='modal', aria-label='Close')
-              span.fas.fa-window-close(aria-hidden='true')
-          .modal-body
-              .input-group.mb-3
-                .custom-file
-                  input#inputGroupFile02.custom-file-input(type='file', name='myImage',5 required)
-                  label.custom-file-label(for='inputGroupFile02', aria-describedby='inputGroupFileAddon02') Choose file
-                .input-group-append                  
-          .modal-footer
-            button.btn.btn-secondary(type='button', data-dismiss='modal') Close
-            button.btn.btn-primary(type='submit') Upload
+  main(role='main')
+    #uploadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='uploadModalTitle', aria-hidden='true')
+      form(method='post', action="/main" enctype='multipart/form-data')
+        .modal-dialog(role='document')
+          .modal-content
+            .modal-header
+              h5#uploadModalTitle.modal-title Choose file
+              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                span.fas.fa-window-close(aria-hidden='true')
+            .modal-body
+                .input-group.mb-3
+                  .custom-file
+                    input#inputGroupFile02.custom-file-input(type='file', name='myImage',5 required)
+                    label.custom-file-label(for='inputGroupFile02', aria-describedby='inputGroupFileAddon02') Choose file
+                  .input-group-append                  
+            .modal-footer
+              button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+              button.btn.btn-primary(type='submit') Upload
     .album.py-5
       .container
         .row
           each img, i in list
             .col-md-4
               .card.mb-4.box-shadow
-                img.card-img-top(src='uploads/' + img.name alt=img.name)
+                img.card-img-top(src='uploads/' + img.UUID + img.EXTENSION alt=img.NAME)
                 .card-body
                   p.card-text
                   .d-flex.justify-content-between.align-items-center
@@ -36,4 +36,4 @@ block content
                         i.fas.fa-edit
                       button.btn.btn-sm.btn-outline-secondary(type='button' data-toggle="tooltip" data-placement="top" title="Remove")
                         i.fas.fa-trash
-                    //- small.text-muted 9 mins
+                      //- small.text-muted 9 mins
