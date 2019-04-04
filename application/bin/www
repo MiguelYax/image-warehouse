@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 const init = require('../modules/init');
+const log = require('../modules/log');
 const app = require('../app');
 const config = require('config');
 const protocol = require(config.https ? 'https' : 'http');
@@ -71,11 +72,11 @@ function onError(error) {
     // handle specific listen errors with friendly messages
     switch (error.code) {
     case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
+        log(bind + ' requires elevated privileges');
         process.exit(1);
         break;
     case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
+        log(bind + ' is already in use');
         process.exit(1);
         break;
     default:
@@ -90,5 +91,5 @@ function onError(error) {
 function onListening() {
     let addr = server.address();
     let bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-    console.log('Listening on ' + bind);
+    log('Listening on ' + bind);
 }
