@@ -129,9 +129,7 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "VpcId": { "Ref": "vpcProjectAwsCourse" },
-        "Tags": [
-          { "Key": "Name", "Value": "securityGroupVpcBastion" }
-        ],
+        "Tags": [{ "Key": "Name", "Value": "securityGroupVpcBastion" }],
         "GroupName": "securityGroupVpcBastion",
         "GroupDescription": "Bastion Host",
         "SecurityGroupIngress": [
@@ -169,9 +167,7 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "VpcId": { "Ref": "vpcProjectAwsCourse" },
-        "Tags": [
-          { "Key": "Name", "Value": "securityGroupVpcEc2" }
-        ],
+        "Tags": [{ "Key": "Name", "Value": "securityGroupVpcEc2" }],
         "GroupName": "securityGroupVpcEc2",
         "GroupDescription": "Bastion Host",
         "SecurityGroupIngress": [
@@ -179,13 +175,13 @@
             "IpProtocol": "tcp",
             "FromPort": 80,
             "ToPort": 80,
-            "CidrIp": "10.0.1.0/24"
+            "CidrIp": "0.0.0.0/0"
           },
           {
             "IpProtocol": "tcp",
             "FromPort": 22,
             "ToPort": 22,
-            "CidrIp": "10.0.1.0/24"
+            "CidrIp": "0.0.0.0/0"
           }
         ],
         "SecurityGroupEgress": [
@@ -298,8 +294,6 @@
         ]
       }
     },
-    
-    
 
     "internetGatewayvpcProjectAwsCourse": {
       "DependsOn": ["vpcProjectAwsCourse"],
@@ -328,6 +322,18 @@
       }
     },
 
+    "NATGateway": {
+      "DependsOn": "internetGatewayAttachvpcProjectAwsCourse",
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": ["ElasticIpEcNAT", "AllocationId"]
+        },
+        "SubnetId": { "Ref": "z1pubSubnet1" },
+        "Tags": [{ "Key": "Name", "Value": "NATGateway" }]
+      }
+    },
+
     "RoutepubrouteTablevpcProjectAwsCourse": {
       "DependsOn": [
         "vpcProjectAwsCourse",
@@ -339,6 +345,19 @@
         "RouteTableId": { "Ref": "pubrouteTablevpcProjectAwsCourse" },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": { "Ref": "internetGatewayvpcProjectAwsCourse" }
+      }
+    },
+    "RouteprivrouteTablevpcProjectAwsCourse": {
+      "DependsOn": [
+        "vpcProjectAwsCourse",
+        "internetGatewayvpcProjectAwsCourse",
+        "privrouteTablevpcProjectAwsCourse"
+      ],
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": { "Ref": "privrouteTablevpcProjectAwsCourse" },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": { "Ref": "NATGateway" }
       }
     },
 
@@ -438,10 +457,10 @@
     },
 
     "Ec2Instance1": {
-      "DependsOn": ["vpcProjectAwsCourse", "z1pubSubnet1"],
+      "DependsOn": ["vpcProjectAwsCourse", "z2privSubnet1", "NATGateway"],
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "SubnetId": { "Ref": "z1privSubnet1" },
+        "SubnetId": { "Ref": "z2privSubnet1" },
         "ImageId": "ami-0c55b159cbfafe1f0",
         "BlockDeviceMappings": [
           {
@@ -490,10 +509,10 @@
       }
     },
     "Ec2Instance2": {
-      "DependsOn": ["vpcProjectAwsCourse", "z1pubSubnet1"],
+      "DependsOn": ["vpcProjectAwsCourse", "z1privSubnet1", "NATGateway"],
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "SubnetId": { "Ref": "z2privSubnet1" },
+        "SubnetId": { "Ref": "z1privSubnet1" },
         "ImageId": "ami-0c55b159cbfafe1f0",
         "BlockDeviceMappings": [
           {
@@ -549,6 +568,12 @@
         "InstanceId": { "Ref": "Ec2BastionHost" }
       }
     },
+    "ElasticIpEcNAT": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
 
     "elasticLoadBalancingProjectAwsCourse": {
       "DependsOn": [
@@ -586,8 +611,6 @@
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
         "DBSubnetGroupDescription": "Group for rds",
-        "DBSubnetGroupName": "rds-subnetgroup-project",
-
         "SubnetIds": [{ "Ref": "z2privSubnet2" }, { "Ref": "z1privSubnet2" }]
       }
     },
@@ -596,7 +619,7 @@
       "DependsOn": ["mySubnetGroup"],
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBSubnetGroupName": "rds-subnetgroup-project",
+        "DBSubnetGroupName": { "Ref": "mySubnetGroup" },
         "DBName": "fileUploadDb",
         "AllocatedStorage": "20",
         "DBInstanceClass": "db.t2.micro",
@@ -604,7 +627,7 @@
         "MasterUsername": "userFileUpload",
         "MasterUserPassword": "passFileUpload",
         "DBInstanceIdentifier": "mysqlfileupload",
-        "VPCSecurityGroups" : [ { "Ref": "securityGroupvpcProjectAwsCourseRds" }]
+        "VPCSecurityGroups": [{ "Ref": "securityGroupvpcProjectAwsCourseRds" }]
       }
     },
     "RecordServiceS3Bucket": {
