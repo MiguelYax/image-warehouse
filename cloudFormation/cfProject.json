@@ -468,7 +468,25 @@
             "Key": "name",
             "Value": "Ec2Instance1"
           }
-        ]
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "cd /home/ubuntu/ \n",
+                "curl -sL https://deb.nodesource.com/setup_10.x | sudo bash - \n",
+                "sudo apt -y install nodejs \n",
+                "sudo npm install forever -g \n",
+                "git clone https://github.com/MiguelYax/image-warehouse.git \n",
+                "cd image-warehouse/application/ \n",
+                "sudo npm install \n",
+                "sudo forever start bin/www \n"
+              ]
+            ]
+          }
+        }
       }
     },
     "Ec2Instance2": {
@@ -502,7 +520,25 @@
             "Key": "name",
             "Value": "Ec2Instance2"
           }
-        ]
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "cd /home/ubuntu/ \n",
+                "curl -sL https://deb.nodesource.com/setup_10.x | sudo bash - \n",
+                "sudo apt -y install nodejs \n",
+                "sudo npm install forever -g \n",
+                "git clone https://github.com/MiguelYax/image-warehouse.git \n",
+                "cd image-warehouse/application/ \n",
+                "sudo npm install \n",
+                "sudo forever start bin/www \n"
+              ]
+            ]
+          }
+        }
       }
     },
 
@@ -513,13 +549,17 @@
         "InstanceId": { "Ref": "Ec2BastionHost" }
       }
     },
-    
 
     "elasticLoadBalancingProjectAwsCourse": {
-      "DependsOn": ["Ec2Instance1", "Ec2Instance2","z1pubSubnet1","z2pubSubnet1"],
+      "DependsOn": [
+        "Ec2Instance1",
+        "Ec2Instance2",
+        "z1pubSubnet1",
+        "z2pubSubnet1"
+      ],
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
-        "Subnets" : [{ "Ref": "z1pubSubnet1" }, { "Ref": "z2pubSubnet1" }],
+        "Subnets": [{ "Ref": "z1pubSubnet1" }, { "Ref": "z2pubSubnet1" }],
         "Instances": [{ "Ref": "Ec2Instance1" }, { "Ref": "Ec2Instance2" }],
         "Listeners": [
           {
@@ -541,19 +581,16 @@
         }
       }
     },
-    "mySubnetGroup":{
+    "mySubnetGroup": {
       "DependsOn": ["z2privSubnet2", "z1privSubnet2"],
-      "Type" : "AWS::RDS::DBSubnetGroup",
-      "Properties" : {
-         "DBSubnetGroupDescription" : "Group for rds",
-         "DBSubnetGroupName" :"rds-subnetgroup-project",
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Group for rds",
+        "DBSubnetGroupName": "rds-subnetgroup-project",
 
-         "SubnetIds" : [
-          { "Ref": "z2privSubnet2" }, 
-          { "Ref": "z1privSubnet2" }
-          ]
+        "SubnetIds": [{ "Ref": "z2privSubnet2" }, { "Ref": "z1privSubnet2" }]
       }
-   },     
+    },
 
     "RDSDbProjectAwsCourse": {
       "DependsOn": ["mySubnetGroup"],
@@ -583,76 +620,92 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Action": [ "sts:AssumeRole" ],
-            "Effect": "Allow",
-            "Principal": {
-              "Service": [ "s3.amazonaws.com" ]
+          "Statement": [
+            {
+              "Action": ["sts:AssumeRole"],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": ["s3.amazonaws.com"]
+              }
             }
-          }]
+          ]
         }
-      }    
+      }
     },
     "BucketBackupPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Statement": [{
-            "Action": [
-              "s3:GetReplicationConfiguration",
-              "s3:ListBucket"
-            ],
-            "Effect": "Allow",
-            "Resource": [{
-              "Fn::Join": [ "", [
-                  "arn:aws:s3:::", {
-                    "Ref": "RecordServiceS3Bucket"
-                  }
-                ]
+          "Statement": [
+            {
+              "Action": ["s3:GetReplicationConfiguration", "s3:ListBucket"],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "RecordServiceS3Bucket"
+                      }
+                    ]
+                  ]
+                }
               ]
-            }]
-          },{
-            "Action": [
-              "s3:GetObjectVersion",
-              "s3:GetObjectVersionAcl"
-            ],
-            "Effect": "Allow",
-            "Resource": [{
-              "Fn::Join": [ "", [
-                  "arn:aws:s3:::", {
-                    "Ref": "RecordServiceS3Bucket"
-                  },
-                  "/*"
-                ]
+            },
+            {
+              "Action": ["s3:GetObjectVersion", "s3:GetObjectVersionAcl"],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Ref": "RecordServiceS3Bucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
               ]
-            }]
-          }, {
-            "Action": [
-              "s3:ReplicateObject",
-              "s3:ReplicateDelete"
-            ],
-            "Effect": "Allow",
-            "Resource": [{
-              "Fn::Join": [ "", [ 
-                 "arn:aws:s3:::", {
-                   "Fn::Join": [ "-", [ 
-                     { "Ref": "AWS::Region" }, 
-                     { "Ref": "AWS::StackName" }, 
-                     "replicationbucket"
-                   ]]
-                 }, 
-                 "/*"
-              ]]
-            }]
-          }]
+            },
+            {
+              "Action": ["s3:ReplicateObject", "s3:ReplicateDelete"],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:s3:::",
+                      {
+                        "Fn::Join": [
+                          "-",
+                          [
+                            { "Ref": "AWS::Region" },
+                            { "Ref": "AWS::StackName" },
+                            "replicationbucket"
+                          ]
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
         },
         "PolicyName": "BucketBackupPolicy",
-        "Roles": [{
-          "Ref": "WorkItemBucketBackupRole"
-        }]
+        "Roles": [
+          {
+            "Ref": "WorkItemBucketBackupRole"
+          }
+        ]
       }
     }
-
-
   }
 }
