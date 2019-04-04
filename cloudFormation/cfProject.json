@@ -124,16 +124,16 @@
       }
     },
 
-    "securityGroupvpcProjectAwsCourse": {
+    "securityGroupVpcBastion": {
       "DependsOn": ["vpcProjectAwsCourse"],
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "VpcId": { "Ref": "vpcProjectAwsCourse" },
         "Tags": [
-          { "Key": "Name", "Value": "securityGroupvpcProjectAwsCourse" }
+          { "Key": "Name", "Value": "securityGroupVpcBastion" }
         ],
-        "GroupName": "securityGroupvpcProjectAwsCourse",
-        "GroupDescription": "Allow http to client host and mysql",
+        "GroupName": "securityGroupVpcBastion",
+        "GroupDescription": "Bastion Host",
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
@@ -146,12 +146,46 @@
             "FromPort": 22,
             "ToPort": 22,
             "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
           },
           {
             "IpProtocol": "tcp",
-            "FromPort": 3306,
-            "ToPort": 3306,
+            "FromPort": 22,
+            "ToPort": 22,
             "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "securityGroupVpcEc2": {
+      "DependsOn": ["vpcProjectAwsCourse"],
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": { "Ref": "vpcProjectAwsCourse" },
+        "Tags": [
+          { "Key": "Name", "Value": "securityGroupVpcEc2" }
+        ],
+        "GroupName": "securityGroupVpcEc2",
+        "GroupDescription": "Bastion Host",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "10.0.1.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "10.0.1.0/24"
           }
         ],
         "SecurityGroupEgress": [
@@ -176,6 +210,96 @@
         ]
       }
     },
+    "securityGroupvpcProjectAwsCourseRds": {
+      "DependsOn": ["vpcProjectAwsCourse"],
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": { "Ref": "vpcProjectAwsCourse" },
+        "Tags": [
+          { "Key": "Name", "Value": "securityGroupvpcProjectAwsCourseRds" }
+        ],
+        "GroupName": "securityGroupvpcProjectAwsCourseRds",
+        "GroupDescription": "Allow http to client host and mysql",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "10.0.2.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "10.0.2.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "CidrIp": "10.0.2.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "10.0.5.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "10.0.5.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "CidrIp": "10.0.5.0/24"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "10.0.2.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "10.0.2.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "CidrIp": "10.0.2.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "10.0.5.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "10.0.5.0/24"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "CidrIp": "10.0.5.0/24"
+          }
+        ]
+      }
+    },
+    
+    
 
     "internetGatewayvpcProjectAwsCourse": {
       "DependsOn": ["vpcProjectAwsCourse"],
@@ -302,7 +426,7 @@
         "KeyName": "bastion-host",
         "InstanceType": "t2.micro",
         "SecurityGroupIds": [
-          { "Fn::GetAtt": ["securityGroupvpcProjectAwsCourse", "GroupId"] }
+          { "Fn::GetAtt": ["securityGroupVpcBastion", "GroupId"] }
         ],
         "Tags": [
           {
@@ -337,7 +461,7 @@
         "KeyName": "myKeyValuePair",
         "InstanceType": "t2.micro",
         "SecurityGroupIds": [
-          { "Fn::GetAtt": ["securityGroupvpcProjectAwsCourse", "GroupId"] }
+          { "Fn::GetAtt": ["securityGroupVpcEc2", "GroupId"] }
         ],
         "Tags": [
           {
@@ -351,7 +475,7 @@
       "DependsOn": ["vpcProjectAwsCourse", "z1pubSubnet1"],
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "SubnetId": { "Ref": "z1privSubnet1" },
+        "SubnetId": { "Ref": "z2privSubnet1" },
         "ImageId": "ami-0c55b159cbfafe1f0",
         "BlockDeviceMappings": [
           {
@@ -371,7 +495,7 @@
         "KeyName": "myKeyValuePair",
         "InstanceType": "t2.micro",
         "SecurityGroupIds": [
-          { "Fn::GetAtt": ["securityGroupvpcProjectAwsCourse", "GroupId"] }
+          { "Fn::GetAtt": ["securityGroupVpcEc2", "GroupId"] }
         ],
         "Tags": [
           {
@@ -442,7 +566,8 @@
         "Engine": "MySQL",
         "MasterUsername": "userFileUpload",
         "MasterUserPassword": "passFileUpload",
-        "DBInstanceIdentifier": "mysqlfileupload"
+        "DBInstanceIdentifier": "mysqlfileupload",
+        "VPCSecurityGroups" : [ { "Ref": "securityGroupvpcProjectAwsCourseRds" }]
       }
     },
     "RecordServiceS3Bucket": {
