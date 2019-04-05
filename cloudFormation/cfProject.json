@@ -162,6 +162,32 @@
         ]
       }
     },
+    "securityGroupLoadBalancer": {
+      "DependsOn": ["vpcProjectAwsCourse"],
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": { "Ref": "vpcProjectAwsCourse" },
+        "Tags": [{ "Key": "Name", "Value": "securityGroupLoadBalancer" }],
+        "GroupName": "securityGroupLoadBalancer",
+        "GroupDescription": "Security Group Load Balancer",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
     "securityGroupVpcEc2": {
       "DependsOn": ["vpcProjectAwsCourse"],
       "Type": "AWS::EC2::SecurityGroup",
@@ -592,12 +618,14 @@
         "Ec2Instance1",
         "Ec2Instance2",
         "z1pubSubnet1",
-        "z2pubSubnet1"
+        "z2pubSubnet1",
+        "securityGroupLoadBalancer"
       ],
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
         "Subnets": [{ "Ref": "z1pubSubnet1" }, { "Ref": "z2pubSubnet1" }],
         "Instances": [{ "Ref": "Ec2Instance1" }, { "Ref": "Ec2Instance2" }],
+        "SecurityGroups": [{ "Ref": "securityGroupLoadBalancer" }],
         "Listeners": [
           {
             "LoadBalancerPort": "80",
