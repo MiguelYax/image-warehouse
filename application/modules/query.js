@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const config = require('config');
-const log = require('./image');
+const log = require('./log');
 
 let pool = mysql.createPool(config.mysql);
 
