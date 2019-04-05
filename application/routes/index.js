@@ -65,19 +65,16 @@ router.post(
 router.post(
     '/signin',
     function(req, res, next) {
-        user.singin(req.body.email, req.body.password, function(
-            err,
-            data = []
-        ) {
+        user.singin(req.body.email, req.body.password, function(err, data = []) {
             req.dataProcessed =
-                err || !data.length
-                    ? getResult({
-                        msg: 'Usuario o contraseña incorrecta.',
-                        type: 'danger'
-                    })
-                    : getResult({
-                        redirect: '/main'
-                    });
+        err || !data.length
+            ? getResult({
+                msg: 'Usuario o contraseña incorrecta.',
+                type: 'danger'
+            })
+            : getResult({
+                redirect: '/main'
+            });
             if (data.length) {
                 req.session.uuid = data[0].UUID;
                 req.session.user = data[0].EMAIL;
@@ -111,10 +108,10 @@ router.get(
             req.dataProcessed = getResult({ view: 'main', data: data });
             return next();
         });
-        // req.dataProcessed = getResult({
-        //     view: 'main'
-        // });
-        // return next();
+    // req.dataProcessed = getResult({
+    //     view: 'main'
+    // });
+    // return next();
     },
     handler
 );
@@ -122,7 +119,8 @@ router.get(
 router.post(
     '/main',
     function(req, res, next) {
-        upload(req, res, err => {
+        let singleUpload = upload.single('myImage');
+        singleUpload(req, res, err => {
             if (err) {
                 req.dataProcessed = getResult({
                     view: 'main',

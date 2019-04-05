@@ -1,13 +1,25 @@
 {
-    "storage": "./public/uploads/",
-    "port": 3000,
-    "https": false,
-    "mysql": {
-        "connectionLimit" : 10,
-        "host": "localhost",
-        "user": "root",
-        "password": "",
-        "database": "fileUploadDb",
-        "port": 3306
-    }
+  "storage": "./public/uploads/",
+  "port": 3000,
+  "https": false,
+  "mysql": {
+    "connectionLimit": 10,
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "fileUploadDb",
+    "port": 3306
+  },
+  "mainBucket": {
+    "secretAccessKey": "AE4ZAdXqtfY8p1l1tPCG5vv3YmDevChiwuQwBev3",
+    "accessKeyId": "AKIAWJEGJA5ANDAT3XZC",
+    "region": "us-east-2",
+    "name": "myaxbucket"
+},
+"thumbnailBucket": {
+    "secretAccessKey": "AE4ZAdXqtfY8p1l1tPCG5vv3YmDevChiwuQwBev3",
+    "accessKeyId": "AKIAWJEGJA5ANDAT3XZC",
+    "region": "us-east-2",
+    "name": "image-thumbnail-bucket"
+}
 }
