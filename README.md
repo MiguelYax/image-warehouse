@@ -41,7 +41,7 @@ AWS CloudFormation provides a common language for you to describe and provision 
                 ]
             }
             },
-````json    
+```` 
 2. Subnets: 
         For this case we need six subnets, 3 in one zone (us-east-2a) and 3 in another zone(us-east-2c).
 
@@ -79,4 +79,4 @@ AWS CloudFormation provides a common language for you to describe and provision 
                     ]
                 }
                 }
-````json
+````
