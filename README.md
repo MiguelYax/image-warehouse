@@ -59,8 +59,7 @@ AWS CloudFormation provides a common language for you to describe and provision 
         | z2privSubnet1      | 10.0.5.0/24      | us-east-2c      | Ec2 Application                         |
         | z2privSubnet       | 10.0.6.0/24      | us-east-2c      | Rds                                     |
         
-        * This a code for a subnet.
-````json        
+        ````json        
             "z1pubSubnet1": {
                 "DependsOn": ["vpcProjectAwsCourse"],
                 "Type": "AWS::EC2::Subnet",
@@ -79,4 +78,4 @@ AWS CloudFormation provides a common language for you to describe and provision 
                     ]
                 }
                 }
-````
+        ````
