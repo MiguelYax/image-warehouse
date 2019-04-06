@@ -27,7 +27,7 @@ AWS CloudFormation provides a common language for you to describe and provision 
 
 1. VPC  (Virtual Private): This is the code for a vpc, the instance must be default to save costs. 10.0.0.0/16, Netmask: 255.255.0.0 = 16 11111111.11111111 .00000000.00000000. 
     * This a code for a vp
-
+````json
             "vpcProjectAwsCourse": {
             "Type": "AWS::EC2::VPC",
             "Properties": {
@@ -41,7 +41,7 @@ AWS CloudFormation provides a common language for you to describe and provision 
                 ]
             }
             },
-    
+````json    
 2. Subnets: 
         For this case we need six subnets, 3 in one zone (us-east-2a) and 3 in another zone(us-east-2c).
 
@@ -60,6 +60,7 @@ AWS CloudFormation provides a common language for you to describe and provision 
         | z2privSubnet       | 10.0.6.0/24      | us-east-2c      | Rds                                     |
         
         * This a code for a subnet.
+````json        
             "z1pubSubnet1": {
                 "DependsOn": ["vpcProjectAwsCourse"],
                 "Type": "AWS::EC2::Subnet",
@@ -78,3 +79,4 @@ AWS CloudFormation provides a common language for you to describe and provision 
                     ]
                 }
                 }
+````json
