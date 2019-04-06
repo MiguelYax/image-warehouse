@@ -8,14 +8,13 @@ const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const image = require('./image');
-
+const path = require('path');
 const config = require('config');
 
 aws.config.update({
     secretAccessKey: config.mainBucket.secretAccessKey,
     accessKeyId: config.mainBucket.accessKeyId,
     region: config.mainBucket.region
-      
 });
 
 const s3 = new aws.S3();
@@ -33,12 +32,19 @@ const upload = multer({
     storage: multerS3({
         s3,
         bucket: config.mainBucket.name,
-        // acl: 'public-read-write',
-        metadata: function(req, file, cb) {
-            cb(null, { fieldName: 'TESTING_META_DATA!' });
-        },
         key: function(req, file, cb) {
-            cb(null, Date.now().toString());
+            file.uuid = image.uuid();
+            image.upload(
+                file.uuid,
+                file.originalname,
+                0,
+                req.session.uuid,
+                path.extname(file.originalname),
+                function(err, data) {
+                    cb(null, file.uuid + path.extname(file.originalname));
+                    // cb(null, file.uuid);
+                }
+            );
         }
     })
 });
