@@ -131,5 +131,31 @@ We have 3 security groups
       }
     },
 ````    
+   
+4. Route table and Nats
+It is necessary to have a routing table so that the subnets can communicate, also add a nat so that the ec2 have access to the internet to install necessary commands for our application.
+````json
+"NATGateway": {
+      "DependsOn": "internetGatewayAttachvpcProjectAwsCourse",
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": ["ElasticIpEcNAT", "AllocationId"]
+        },
+        "SubnetId": { "Ref": "z1pubSubnet1" },
+        "Tags": [{ "Key": "Name", "Value": "NATGateway" }]
+      }
+    },
+````
 
+5. Ec2 
+Amazon Elastic Compute Cloud (Amazon EC2) provides scalable computing capacity in the Amazon Web Services (AWS) cloud. Using Amazon EC2 eliminates your need to invest in hardware up front, so you can develop and deploy applications faster. You can use Amazon EC2 to launch as many or as few virtual servers as you need, configure security and networking, and manage storage. Amazon EC2 enables you to scale up or down to handle changes in requirements or spikes in popularity, reducing your need to forecast traffic.
+
+We need 3 ec2 for deploy app.
+
+        | Ec2 Name                  | Subnets                         |  Notes                                              |
+        |---------------------------|---------------------------------|-----------------------------------------------------|
+        | Ec2BastionHost            | z1pubSubnet1                    | Only for connection to Instance1 and Instance2      |
+        | Ec2Instance1              | z1privSubnet1                   | LoadBalancer                                        |
+        | Ec2Instance1              | z2privSubnet1                   | Ec2 machine                                         |
 
