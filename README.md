@@ -196,3 +196,36 @@ Cloud formation example to ec2
       }
     },
 ````
+6. RDS (Database Mysql):Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud. It provides cost-efficient and resizable capacity while automating time-consuming administration tasks such as hardware provisioning, database setup, patching and backups. It frees you to focus on your applications so you can give them the fast performance, high availability, security and compatibility they need.
+ref: https://aws.amazon.com/rds/?nc1=h_ls 
+
+We need a mysql instance for app
+For our rds to be in our AvailabilityZone of our subnets it is necessary to make a group of subnets.
+
+
+````json
+"mySubnetGroup": {
+      "DependsOn": ["z2privSubnet2", "z1privSubnet2"],
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Group for rds",
+        "SubnetIds": [{ "Ref": "z2privSubnet2" }, { "Ref": "z1privSubnet2" }]
+      }
+    },
+
+"RDSDbProjectAwsCourse": {
+      "DependsOn": ["mySubnetGroup"],
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBSubnetGroupName": { "Ref": "mySubnetGroup" },
+        "DBName": "fileUploadDb",
+        "AllocatedStorage": "20",
+        "DBInstanceClass": "db.t2.micro",
+        "Engine": "MySQL",
+        "MasterUsername": "********",
+        "MasterUserPassword": "******",
+        "DBInstanceIdentifier": "mysqlfileupload",
+        "VPCSecurityGroups": [{ "Ref": "securityGroupvpcProjectAwsCourseRds" }]
+      }
+    },
+````
