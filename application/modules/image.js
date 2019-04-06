@@ -1,3 +1,9 @@
+/*!
+ * @author myax <mig_dj@hotmail.com>
+ * date 04/06/2019
+ * documentacion de s3: https://github.com/awsdocs/aws-doc-sdk-examples
+ */
+
 const query = require('./query');
 const uuidv4 = require('uuid/v4');
 const config = require('config');
@@ -61,6 +67,11 @@ let image = {
                 item.URL = `https://s3.${
                     config.mainBucket.region
                 }.amazonaws.com/${config.mainBucket.name}/${item.UUID}${
+                    item.EXTENSION
+                }`;
+                item.URL_THUMBNAIL = `https://s3.${
+                    config.thumbnailBucket.region
+                }.amazonaws.com/${config.thumbnailBucket.name}/${item.UUID}${
                     item.EXTENSION
                 }`;
             }
