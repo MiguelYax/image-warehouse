@@ -159,3 +159,40 @@ We need 3 ec2 for deploy app.
         | Ec2Instance1              | z1privSubnet1                   | LoadBalancer                                        |
         | Ec2Instance1              | z2privSubnet1                   | Ec2 machine                                         |
 
+Cloud formation example to ec2
+````json
+ "Ec2BastionHost": {
+      "DependsOn": ["vpcProjectAwsCourse", "z1pubSubnet1"],
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "SubnetId": { "Ref": "z1pubSubnet1" },
+        "ImageId": "ami-0c55b159cbfafe1f0",
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sdm",
+            "Ebs": {
+              "VolumeType": "io1",
+              "Iops": "200",
+              "DeleteOnTermination": "false",
+              "VolumeSize": "20"
+            }
+          },
+          {
+            "DeviceName": "/dev/sdk",
+            "NoDevice": {}
+          }
+        ],
+        "KeyName": "bastion-host",
+        "InstanceType": "t2.micro",
+        "SecurityGroupIds": [
+          { "Fn::GetAtt": ["securityGroupVpcBastion", "GroupId"] }
+        ],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "Ec2BastionHost"
+          }
+        ]
+      }
+    },
+````
