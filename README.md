@@ -26,8 +26,9 @@ following:
 AWS CloudFormation provides a common language for you to describe and provision all the infrastructure resources in your cloud environment. CloudFormation allows you to use a simple text file to model and provision, in an automated and secure manner, all the resources needed for your applications across all regions and accounts. This file serves as the single source of truth for your cloud environment.  Ref. aws.amazon.com/cloudformation
 
 1. VPC  (Virtual Private)
-    * This a code for a vp
+    * This a code for a vpc
 
+````json
      "vpcProjectAwsCourse": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
@@ -40,5 +41,5 @@ AWS CloudFormation provides a common language for you to describe and provision 
           }
         ]
       }
-    },
-
+    }
+````
