@@ -81,9 +81,9 @@ AWS CloudFormation provides a common language for you to describe and provision 
 ````
 3. SecurityGroups: A security group acts as a virtual firewall for your instance to control inbound and outbound traffic. When you launch an instance in a VPC, you can assign up to five security groups to the instance. Security groups act at the instance level, not the subnet level. Therefore, each instance in a subnet in your VPC could be assigned to a different set of security groups. If you don't specify a particular group at launch time, the instance is automatically assigned to the default security group for the VPC. Ref https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
 
-*   We have 3 security groups
+We have 3 security groups
         | Group Name                | SecurityGroupIngress            |  SecurityGroupEgress            |  Notes            |
-        | -------------------       | --------------------------------|---------------------------------|-------------------|
+        |---------------------------|---------------------------------|---------------------------------|-------------------|
         | securityGroupVpcBastion   | All trafic (80,22)              | All trafic 80 and 22            | Bastion Host      |
         | securityGroupLoadBalancer | All trafic 80                   | All trafic 80                   | LoadBalancer      |
         | securityGroupVpcEc2       | 10.0.1.0/24,10.0.4.0/24(80,22)  | 10.0.1.0/24,10.0.4.0/24(80,22)  | Ec2 machine       |
