@@ -2,107 +2,96 @@
  * @author myax <mig_dj@hotmail.com>
  * date 04/03/2019
  * adapatacion de ejemplo aws - lambda
- * source: https://docs.aws.amazon.com/es_es/lambda/latest/dg/with-s3-example.html 
+ * source: https://docs.aws.amazon.com/es_es/lambda/latest/dg/with-s3-example.html
  */
 
- // dependencies
-var async = require('async');
-var AWS = require('aws-sdk');
-var gm = require('gm')
-            .subClass({ imageMagick: true }); // Enable ImageMagick integration.
-var util = require('util');
-
+// dependencies
+var AWS = require("aws-sdk");
+var asyncModule = require("async");
+var gm = require("gm").subClass({ imageMagick: true }); // Enable ImageMagick integration.
+var path = require("path");
+let mime = require("mime-types");
 // constants
-var MAX_WIDTH  = 100;
-var MAX_HEIGHT = 100;
+var w = 100;
+var h = 100;
 
-// get reference to S3 client 
-var s3 = new AWS.S3();
- 
-exports.handler = function(event, context, callback) {
-    // Read options from the event.
-    console.log("Reading options from event:\n", util.inspect(event, {depth: 5}));
-    var srcBucket = event.Records[0].s3.bucket.name;
-    // Object key may have spaces or unicode non-ASCII characters.
-    var srcKey    =
-    decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));  
-    var dstBucket = srcBucket + "resized";
-    var dstKey    = "resized-" + srcKey;
-
-    // Sanity check: validate that source and destination are different buckets.
-    if (srcBucket == dstBucket) {
-        callback("Source and destination buckets are the same.");
-        return;
-    }
-
-    // Infer the image type.
-    var typeMatch = srcKey.match(/\.([^.]*)$/);
-    if (!typeMatch) {
-        callback("Could not determine the image type.");
-        return;
-    }
-    var imageType = typeMatch[1];
-    if (imageType != "jpg" && imageType != "png") {
-        callback('Unsupported image type: ${imageType}');
-        return;
-    }
-
-    // Download the image from S3, transform, and upload to a different S3 bucket.
-    async.waterfall([
-        function download(next) {
-            // Download the image from S3 into a buffer.
-            s3.getObject({
-                    Bucket: srcBucket,
-                    Key: srcKey
-                },
-                next);
-            },
-        function transform(response, next) {
-            gm(response.Body).size(function(err, size) {
-                // Infer the scaling factor to avoid stretching the image unnaturally.
-                var scalingFactor = Math.min(
-                    MAX_WIDTH / size.width,
-                    MAX_HEIGHT / size.height
-                );
-                var width  = scalingFactor * size.width;
-                var height = scalingFactor * size.height;
-
-                // Transform the image buffer in memory.
-                this.resize(width, height)
-                    .toBuffer(imageType, function(err, buffer) {
-                        if (err) {
-                            next(err);
-                        } else {
-                            next(null, response.ContentType, buffer);
-                        }
-                    });
-            });
-        },
-        function upload(contentType, data, next) {
-            // Stream the transformed image to a different S3 bucket.
-            s3.putObject({
-                    Bucket: dstBucket,
-                    Key: dstKey,
-                    Body: data,
-                    ContentType: contentType
-                },
-                next);
-            }
-        ], function (err) {
-            if (err) {
-                console.error(
-                    'Unable to resize ' + srcBucket + '/' + srcKey +
-                    ' and upload to ' + dstBucket + '/' + dstKey +
-                    ' due to an error: ' + err
-                );
-            } else {
-                console.log(
-                    'Successfully resized ' + srcBucket + '/' + srcKey +
-                    ' and uploaded to ' + dstBucket + '/' + dstKey
-                );
-            }
-
-            callback(null, "message");
-        }
-    );
+let config = {
+  mainBucket: {
+    secretAccessKey: "******",
+    accessKeyId: "******",
+    region: "us-east-2",
+    name: "file-upload-main-bucket"
+  },
+  thumbnailBucket: {
+    secretAccessKey: "*****",
+    accessKeyId: "******",
+    region: "us-east-2",
+    name: "file-upload-thumbnail-bucket"
+  }
 };
+
+// get reference to S3 client
+AWS.config.update(config.mainBucket);
+var s3 = new AWS.S3();
+
+let thumbnail = function(event, context, callback) {
+  let srcKey = event.srcKey;
+  let imageType = path.extname(srcKey).replace(".", "");
+
+  s3.getObject(
+    {
+      Bucket: config.mainBucket.name,
+      Key: srcKey
+    },
+    function(err, data) {
+      if (err) {
+        callback(err);
+      } else {
+        gm(data.Body, srcKey)
+          .resize(w, h, "^")
+          .gravity("Center")
+          .extent(w, h)
+          .quality(80)
+          .stream(function(err, stdout, stderr) {
+            if (err) {
+              callback(err);
+            } else {
+              var buf = new Buffer("");
+              stdout.on("data", function(data) {
+                buf = Buffer.concat([buf, data]);
+              });
+              stdout.on("end", function(data) {
+                var data = {
+                  Bucket: config.thumbnailBucket.name,
+                  Key: srcKey,
+                  Body: buf,
+                  ContentType: mime.lookup(srcKey)
+                };
+                s3.putObject(data, callback);
+              });
+            }
+          });
+      }
+    }
+  );
+};
+
+module.exports = thumbnail;
+
+const http = require("http");
+
+const server = http
+  .createServer(function(request, response) {
+    if (request.method == "POST") {
+      thumbnail(
+        {
+          srcKey: "1554553832914.jpg"
+        },
+        {},
+        function(err, data) {
+          console.log(arguments);
+        }
+      );
+    }
+  })
+  .listen(3000);
