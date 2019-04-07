@@ -5,20 +5,20 @@
     "mysql": {
         "connectionLimit": 10,
         "host": "mysqlfileupload.cwti6x3lleuq.us-east-2.rds.amazonaws.com",
-        "user": "userFileUpload",
-        "password": "passFileUpload",
-        "database": "fileUploadDb",
-        "port": 3306
+        "user": "*****",
+        "password": "*****",
+        "database": "*****",
+        "port": 8888
     },
     "mainBucket": {
-        "secretAccessKey": "AE4ZAdXqtfY8p1l1tPCG5vv3YmDevChiwuQwBev3",
-        "accessKeyId": "AKIAWJEGJA5ANDAT3XZC",
+        "secretAccessKey": "*****",
+        "accessKeyId": "*****",
         "region": "us-east-2",
         "name": "myaxbucket"
     },
     "thumbnailBucket": {
-        "secretAccessKey": "AE4ZAdXqtfY8p1l1tPCG5vv3YmDevChiwuQwBev3",
-        "accessKeyId": "AKIAWJEGJA5ANDAT3XZC",
+        "secretAccessKey": "*****",
+        "accessKeyId": "*****",
         "region": "us-east-2",
         "name": "image-thumbnail-bucket"
     }
