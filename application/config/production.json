@@ -11,14 +11,14 @@
     "port": 3306
   },
   "mainBucket": {
-    "secretAccessKey": "AE4ZAdXqtfY8p1l1tPCG5vv3YmDevChiwuQwBev3",
-    "accessKeyId": "AKIAWJEGJA5ANDAT3XZC",
+    "secretAccessKey": "*****",
+    "accessKeyId": "*****",
     "region": "us-east-2",
     "name": "myaxbucket"
 },
 "thumbnailBucket": {
-    "secretAccessKey": "AE4ZAdXqtfY8p1l1tPCG5vv3YmDevChiwuQwBev3",
-    "accessKeyId": "AKIAWJEGJA5ANDAT3XZC",
+    "secretAccessKey": "*****",
+    "accessKeyId": "*****",
     "region": "us-east-2",
     "name": "image-thumbnail-bucket"
 }
